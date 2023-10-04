@@ -17,61 +17,69 @@ router.get('/blog-stats', async (req, res) => {
 
     // Extract the blog data
     const blogData = response.data.blogs;
-    console.log('blogData---->',blogData);
+    console.log('blogData---->', blogData);
 
     //write code here
     const totalLength = blogData.length;
     console.log("totalLength---->", totalLength);
 
     //blog with longest title
-    let blog = null;
-    let max = 0;
-    for(let i = 0; i<blogData.length;++i){
-        let currentBlog = blogData[i].title;
-        let longestLength = currentBlog.length;
+    const longestTitleBlog = _.maxBy(blogData, (blog) => blog.title.length);
 
-        if(longestLength>max){
-            max= longestLength;
-            blog= currentBlog;
-        }
-    }
-    const title = blog;
-    console.log("title---->", title);
+
+    // let blog = null;
+    // let max = 0;
+    // for(let i = 0; i<blogData.length;++i){
+    //     let currentBlog = blogData[i].title;
+    //     let longestLength = currentBlog.length;
+
+    //     if(longestLength>max){
+    //         max= longestLength;
+    //         blog= currentBlog;
+    //     }
+    // }
+    // const LongestTitle = blog;
+    console.log("title---->", longestTitleBlog);
 
     //blog with substring privacy
-    let count =0;
-    for(let i = 0; i<blogData.length;++i){
-        let currentBlog = blogData[i].title;
-        let bool = currentBlog.toLowerCase().includes("privacy");
-        
-        if(bool){
-            count+= 1;
-        }
-    }
-    
-    const countPrivacy = count;
-    console.log("countPrivacy----->",countPrivacy);
+    const privacyBlogs = _.filter(blogData, (blog) => _.includes(_.toLower(blog.title), 'privacy'));
+
+    // let count = 0;
+    // for (let i = 0; i < blogData.length; ++i) {
+    //   let currentBlog = blogData[i].title;
+    //   let bool = currentBlog.toLowerCase().includes("privacy");
+
+    //   if (bool) {
+    //     count += 1;
+    //   }
+    // }
+
+    //const countPrivacy = count;
+    const countPrivacy = privacyBlogs.length;
+    console.log("countPrivacy----->", countPrivacy);
 
 
     //create array with no duplocate of title means unique title
-    const unique = new Set();
-    for(blog of blogData){
-        unique.add(blog.title);
-    }
+    const uniqueTitles = _.uniqBy(blogData, 'title');
+    // const unique = new Set();
+    // for (blog of blogData) {
+    //   unique.add(blog.title);
+    // }
 
-    const array = Array.from(unique);
+    //const array = Array.from(unique);
+    const array = uniqueTitles.map((blog) => blog.title);
 
     console.log("Array with unique title------>", array);
 
-    
+
 
 
     res.json({
-        blogData,
-        totalLength,
-        title,
-        countPrivacy,
-        array,
+      blogData,
+      totalLength,
+      longestTitleBlog,
+      countPrivacy,
+      array,
 
     });
   } catch (error) {
